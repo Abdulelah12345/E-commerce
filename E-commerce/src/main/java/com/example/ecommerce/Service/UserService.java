@@ -15,6 +15,7 @@ public class UserService {
     ArrayList<User> users=new ArrayList<>();
     private final MerchantStockService merchantStockService;
     private final ProductService productService;
+    private final CategoryService categoryService;
 
     public ArrayList<User> get(){
 
@@ -132,16 +133,19 @@ public boolean buy(String id, String productid, String merchantid, int num) {
 
 
 
-public Product cheapest(){
-        Product cheapest=productService.products.get(0);
-        for(int i=0 ;i<productService.products.size();i++){
-            if(productService.products.get(i).getPrice()<cheapest.getPrice()){
-                cheapest=productService.products.get(i);
+    public Product cheapest(String categoryid){
+        Product cheapest = productService.products.get(0);
+
+        for(int i = 0; i < productService.products.size(); i++){
+            if(productService.products.get(i).getCategoryID().equals(categoryid)){
+                if(productService.products.get(i).getPrice() < cheapest.getPrice()){
+                    cheapest = productService.products.get(i);
+                }
             }
         }
 
         return cheapest;
-}
+    }
 
 public Product randomItemforBudget(double amount){
 
@@ -162,37 +166,56 @@ public Product randomItemforBudget(double amount){
 
     public boolean giftProduct(String senderid, String receiverid, String productid, String merchantid) {
 
-        boolean sender = false;
-        boolean receiver = false;
-
+        User senderUser = null;
+        User receiverUser = null;
         for (int i = 0; i < users.size(); i++) {
-
             if (users.get(i).getId().equals(senderid)) {
-                sender = true;
+                senderUser = users.get(i);
             }
 
             if (users.get(i).getId().equals(receiverid)) {
-                receiver = true;
+                receiverUser = users.get(i);
             }
         }
 
-        if (!sender || !receiver) {
+
+        if (senderUser == null || receiverUser == null) {
             return false;
         }
+
 
         for (int i = 0; i < merchantStockService.merchantStocks.size(); i++) {
 
             if (merchantStockService.merchantStocks.get(i).getProductid().equals(productid) && merchantStockService.merchantStocks.get(i).getMerchantid().equals(merchantid) && merchantStockService.merchantStocks.get(i).getStock() > 0) {
 
-                merchantStockService.merchantStocks.get(i).setStock(merchantStockService.merchantStocks.get(i).getStock() - 1);
 
-                return true;
+                for (int j = 0; j < productService.products.size(); j++) {
+
+                    if (productService.products.get(j).getId().equals(productid)) {
+
+                        double price = productService.products.get(j).getPrice();
+
+
+                        if (senderUser.getBalance() < price) {
+                            return false;
+                        }
+
+
+                        senderUser.setBalance(senderUser.getBalance() - price);
+
+
+                        merchantStockService.merchantStocks.get(i).setStock(
+                                merchantStockService.merchantStocks.get(i).getStock() - 1
+                        );
+
+                        return true;
+                    }
+                }
             }
         }
 
         return false;
     }
-
 
     public ArrayList<Product> getByCategoryAndPriceRange(String categoryid,double min,double max){
         ArrayList<Product> products1=new ArrayList<>();
