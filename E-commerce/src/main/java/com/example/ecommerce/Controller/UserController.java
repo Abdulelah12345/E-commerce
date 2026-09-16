@@ -112,9 +112,9 @@ public class UserController {
 
     }
 
-    @GetMapping("/cheapest")
-    public ResponseEntity<?> cheapest(){
-        Product product=userService.cheapest();
+    @GetMapping("/cheapest/{categoryid}")
+    public ResponseEntity<?> cheapest(@PathVariable String categoryid){
+        Product product=userService.cheapest(categoryid);
         if(product==null){
             return ResponseEntity.status(400).body(new ApiResponse("nothing to show"));
         }
