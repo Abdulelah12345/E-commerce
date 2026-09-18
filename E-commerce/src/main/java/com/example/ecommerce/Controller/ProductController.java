@@ -4,6 +4,7 @@ package com.example.ecommerce.Controller;
 import com.example.ecommerce.Api.ApiResponse;
 import com.example.ecommerce.Model.Product;
 import com.example.ecommerce.Service.ProductService;
+import com.example.ecommerce.Service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 public class ProductController {
 
     private final ProductService productService;
+private final UserService userService;
 
     @GetMapping("/get")
     public ResponseEntity<?> getProduct(){
@@ -70,9 +72,13 @@ public class ProductController {
 
     }
 
-    @PutMapping("/discount/{id}/{discount}")
-    public ResponseEntity<?> discount(@PathVariable String id,@PathVariable double discount){
-       boolean updated= productService.discount(id, discount);
+    @PutMapping("/discount/{userid}/{id}/{discount}")
+    public ResponseEntity<?> discount(@PathVariable String userid,@PathVariable String id,@PathVariable double discount){
+       if(!userService.isAdmin(userid)){
+           return ResponseEntity.status(400).body(new ApiResponse("Only admin can give a discount"));
+
+       }
+        boolean updated= productService.discount( id, discount);
        if(!updated){
            return ResponseEntity.status(400).body(new ApiResponse("No product with this ID"));
        }
