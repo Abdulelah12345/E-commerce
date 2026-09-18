@@ -134,12 +134,17 @@ public boolean buy(String id, String productid, String merchantid, int num) {
 
 
     public Product cheapest(String categoryid){
-        Product cheapest = productService.products.get(0);
+
+        Product cheapest = null;
 
         for(int i = 0; i < productService.products.size(); i++){
-            if(productService.products.get(i).getCategoryID().equals(categoryid)){
-                if(productService.products.get(i).getPrice() < cheapest.getPrice()){
-                    cheapest = productService.products.get(i);
+
+            Product product = productService.products.get(i);
+
+            if(product.getCategoryID().equals(categoryid)){
+
+                if(cheapest == null || product.getPrice() < cheapest.getPrice()){
+                    cheapest = product;
                 }
             }
         }
@@ -154,6 +159,9 @@ public Product randomItemforBudget(double amount){
             if(productService.products.get(i).getPrice()<=amount){
                 affordable.add(productService.products.get(i));
             }
+        }
+        if(affordable.isEmpty()){
+            return null;
         }
     Random random=new Random();
         int randomindex=random.nextInt(affordable.size());
@@ -231,6 +239,19 @@ public Product randomItemforBudget(double amount){
         return products1;
 
     }
+
+    public boolean isAdmin(String userid){
+
+        for (int i = 0; i < users.size(); i++) {
+
+            if (users.get(i).getId().equals(userid)) {
+                return users.get(i).getRole().equals("Admin");
+            }
+        }
+
+        return false;
+    }
+
 
 
 }
