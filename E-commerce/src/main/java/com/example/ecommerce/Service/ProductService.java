@@ -1,14 +1,17 @@
 package com.example.ecommerce.Service;
 
 import com.example.ecommerce.Model.Product;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 
 @Service
+@AllArgsConstructor
 public class ProductService {
 
     ArrayList<Product> products=new ArrayList<>();
+
 
     public ArrayList<Product> get(){
 
@@ -44,25 +47,27 @@ public class ProductService {
         return false;
     }
 
-    public boolean discount(String id,double discount){
+    public boolean discount(String id, double discount){
 
         for (int i = 0; i < products.size(); i++) {
-            if (products.get(i).getId().equals(id)){
-                       double discount1=products.get(i).getPrice()*discount;
-                products.get(i).setPrice(products.get(i).getPrice()-discount1);
+
+            if (products.get(i).getId().equals(id)) {
+
+                double discount1 = products.get(i).getPrice() * (discount / 100);
+
+                products.get(i).setPrice(products.get(i).getPrice() - discount1);
+
                 return true;
             }
-
         }
+
         return false;
-
-
-
-
     }
 
 
     public boolean reprice(String id,double price){
+
+
         for (int i=0;i< products.size();i++){
             if(products.get(i).getId().equals(id)){
                 products.get(i).setPrice(price);
@@ -93,3 +98,24 @@ return products1;
 
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
